@@ -30,13 +30,40 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define :pxeclient do |pxeclient|
-    pxeclient.vm.network :private_network, :ip => "172.20.30.41"
+  config.vm.define :pxeclient0 do |pxeclient|
+    pxeclient.vm.network :private_network, :ip => "172.18.0.41"
     pxeclient.vm.provider :libvirt do |domain|
       domain.management_network_address = '10.20.0.0/24'
+      domain.memory = 12000
+      domain.cpus = 4
       domain.graphics_port = 5901
       domain.storage :file, :size => '100G', :type => 'qcow2'
-      domain.memory = 1024
+      domain.boot 'network'
+      domain.boot 'hd'
+    end
+  end
+
+  config.vm.define :pxeclient1 do |pxeclient|
+    pxeclient.vm.network :private_network, :ip => "172.18.0.42"
+    pxeclient.vm.provider :libvirt do |domain|
+      domain.management_network_address = '10.20.0.0/24'
+      domain.memory = 48000
+      domain.cpus = 32
+      domain.graphics_port = 5902
+      domain.storage :file, :size => '500G', :type => 'qcow2'
+      domain.boot 'network'
+      domain.boot 'hd'
+    end
+  end
+
+  config.vm.define :pxeclient2 do |pxeclient|
+    pxeclient.vm.network :private_network, :ip => "172.18.0.43"
+    pxeclient.vm.provider :libvirt do |domain|
+      domain.management_network_address = '10.20.0.0/24'
+      domain.memory = 48000
+      domain.cpus = 32
+      domain.graphics_port = 5903
+      domain.storage :file, :size => '500G', :type => 'qcow2'
       domain.boot 'network'
       domain.boot 'hd'
     end
