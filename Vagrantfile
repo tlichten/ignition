@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
     fuelmaster.ssh.sudo_command = "%c"
     fuelmaster.ssh.insert_key = false
     fuelmaster.vm.synced_folder ".", "/vagrant", disabled: true
-    fuelmaster.vm.network :private_network, :ip => "172.20.30.40"
+    fuelmaster.vm.network :private_network, :ip => "172.16.0.40"
     fuelmaster.vm.provision "shell", path: "fuel.sh"
     fuelmaster.vm.provider :libvirt do |domain|
       domain.management_network_address = '10.20.0.0/24'
@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define :pxeclient0 do |pxeclient|
-    pxeclient.vm.network :private_network, :ip => "172.18.0.41"
+    pxeclient.vm.network :private_network, :ip => "172.16.0.41"
     pxeclient.vm.provider :libvirt do |domain|
       domain.management_network_address = '10.20.0.0/24'
       domain.memory = 12000
@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define :pxeclient1 do |pxeclient|
-    pxeclient.vm.network :private_network, :ip => "172.18.0.42"
+    pxeclient.vm.network :private_network, :ip => "172.16.0.42"
     pxeclient.vm.provider :libvirt do |domain|
       domain.management_network_address = '10.20.0.0/24'
       domain.memory = 48000
@@ -57,7 +57,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define :pxeclient2 do |pxeclient|
-    pxeclient.vm.network :private_network, :ip => "172.18.0.43"
+    pxeclient.vm.network :private_network, :ip => "172.16.0.43"
     pxeclient.vm.provider :libvirt do |domain|
       domain.management_network_address = '10.20.0.0/24'
       domain.memory = 48000
