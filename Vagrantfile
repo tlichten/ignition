@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :pxeclient0 do |pxeclient|
     pxeclient.vm.network :private_network, :ip => "172.16.0.41"
-    pxeclient.vm.network "forwarded_port", guest: 8000, host: 8000, gateway_ports: true, host_ip: '*', guest_ip: '172.16.0.3'
+    pxeclient.vm.network "forwarded_port", guest: 8080, host: 80, gateway_ports: true, host_ip: '*', guest_ip: '172.16.0.3'
     pxeclient.vm.provider :libvirt do |domain|
       domain.management_network_address = '10.20.0.0/24'
       domain.memory = 12000
