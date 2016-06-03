@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
     fuelmaster.ssh.insert_key = false
     fuelmaster.vm.synced_folder ".", "/vagrant", disabled: true
     fuelmaster.vm.network :private_network, :ip => "172.16.0.40"
+    fuelmaster.vm.network "forwarded_port", guest: 8000, host: 8000, gateway_ports: true, host_ip: '*'
     fuelmaster.vm.provision "shell", path: "fuel.sh"
     fuelmaster.vm.provider :libvirt do |domain|
       domain.management_network_address = '10.20.0.0/24'
@@ -32,12 +33,13 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :pxeclient0 do |pxeclient|
     pxeclient.vm.network :private_network, :ip => "172.16.0.41"
+    pxeclient.vm.network "forwarded_port", guest: 8000, host: 8000, gateway_ports: true, host_ip: '*', guest_ip: '172.16.0.3'
     pxeclient.vm.provider :libvirt do |domain|
       domain.management_network_address = '10.20.0.0/24'
       domain.memory = 12000
       domain.cpus = 4
       domain.graphics_port = 5901
-      domain.storage :file, :size => '100G', :type => 'qcow2'
+      domain.storage :file, :size => '100G', :type => 'raw'
       domain.boot 'network'
       domain.boot 'hd'
     end
@@ -50,7 +52,7 @@ Vagrant.configure("2") do |config|
       domain.memory = 48000
       domain.cpus = 32
       domain.graphics_port = 5902
-      domain.storage :file, :size => '500G', :type => 'qcow2'
+      domain.storage :file, :size => '500G', :type => 'raw'
       domain.boot 'network'
       domain.boot 'hd'
     end
@@ -63,7 +65,7 @@ Vagrant.configure("2") do |config|
       domain.memory = 48000
       domain.cpus = 32
       domain.graphics_port = 5903
-      domain.storage :file, :size => '500G', :type => 'qcow2'
+      domain.storage :file, :size => '500G', :type => 'raw'
       domain.boot 'network'
       domain.boot 'hd'
     end
