@@ -1,12 +1,8 @@
-SERVER_ADDRESS: "10.20.0.2"
-LISTEN_PORT: "8000"
-KEYSTONE_USER: "admin"
-KEYSTONE_PASS: "admin"
-
 env:
-  iso_path: "MirantisOpenStack-8.0-RC2.iso"
+  iso: "/tmp/MirantisOpenStack-8.0.iso"
   autodeploy: true
   skipfuelmenu: false
+  genpassword: 1
 node:
   master:
     username: "root"
@@ -15,13 +11,17 @@ node:
       admin: "10.20.0.2"
       public: "172.18.0.1"
       mgmt: "192.168.0.1"
+    cidr:
+      admin: "10.20.0.0/24"
     cpu: 2
-    memory: 1836
-    disk: 65546
+    memory: 2048
   slaves:
-    -   cpu: 1
-        memory: 2336
-    -   cpu: 1
-        memory: 2336
-    -   cpu: 1
-        memory: 5336
+    -   cpu: 4
+        memory: 1300
+        disk: "100G"
+    -   cpu: 4
+        memory: 1300
+        disk: "500G"
+    -   cpu: 4
+        memory: 1300
+        disk: "500G"

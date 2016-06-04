@@ -17,57 +17,37 @@ Vagrant.configure("2") do |config|
     fuelmaster.ssh.insert_key = false
     fuelmaster.vm.synced_folder ".", "/vagrant", disabled: true
     fuelmaster.vm.network :private_network, :ip => "172.16.0.40"
-    fuelmaster.vm.network "forwarded_port", guest: 8000, host: 8000, gateway_ports: true, host_ip: '*'
     fuelmaster.vm.provision "shell", path: "fuel.sh"
+    fuelmaster.vm.provision "file", source: "parse_yaml.sh", destination: "parse_yaml.sh"
     fuelmaster.vm.provider :libvirt do |domain|
-      domain.management_network_address = '10.20.0.0/24'
-      domain.memory = 6048
-      domain.cpus = 4
+      domain.management_network_address = CONF["node"]["master"]["cidr"]["admin"]
+      domain.memory = CONF["node"]["master"]["memory"]
+      domain.cpus = CONF["node"]["master"]["cpu"]
       domain.nested = true
       domain.volume_cache = 'none'
-      domain.storage :file, :device => :cdrom, :path => '/tmp/MirantisOpenStack-8.0.iso'
+      domain.storage :file, :device => :cdrom, :path => CONF["env"]["iso"]
       domain.boot 'hd'
       domain.boot 'cdrom'
     end
   end
 
-  config.vm.define :pxeclient0 do |pxeclient|
-    pxeclient.vm.network :private_network, :ip => "172.16.0.41"
-    pxeclient.vm.network "forwarded_port", guest: 8080, host: 80, gateway_ports: true, host_ip: '*', guest_ip: '172.16.0.3'
-    pxeclient.vm.provider :libvirt do |domain|
-      domain.management_network_address = '10.20.0.0/24'
-      domain.memory = 12000
-      domain.cpus = 4
-      domain.graphics_port = 5901
-      domain.storage :file, :size => '100G', :type => 'raw'
-      domain.boot 'network'
-      domain.boot 'hd'
+  CONF["node"]["slaves"].each_with_index do |slave,i|
+    config.vm.define vm_name = "fuelslave-%02d" % i do |fuelslave|  
+      fuelslave.vm.network :private_network, :ip => "172.16.0.4#{2+i}"
+      fuelslave.vm.provider :libvirt do |domain|
+        domain.management_network_address = CONF["node"]["master"]["cidr"]["admin"]
+        domain.management_network_mac = "DEADAC1D00%02d" % i
+        domain.memory = slave["memory"]
+        domain.cpus = slave["cpu"]
+        domain.graphics_port = 5901+i
+        domain.storage :file, :size => slave["disk"], :type => 'raw'
+        domain.boot 'network'
+        domain.boot 'hd'
+      end
     end
   end
 
-  config.vm.define :pxeclient1 do |pxeclient|
-    pxeclient.vm.network :private_network, :ip => "172.16.0.42"
-    pxeclient.vm.provider :libvirt do |domain|
-      domain.management_network_address = '10.20.0.0/24'
-      domain.memory = 48000
-      domain.cpus = 32
-      domain.graphics_port = 5902
-      domain.storage :file, :size => '500G', :type => 'raw'
-      domain.boot 'network'
-      domain.boot 'hd'
-    end
-  end
-
-  config.vm.define :pxeclient2 do |pxeclient|
-    pxeclient.vm.network :private_network, :ip => "172.16.0.43"
-    pxeclient.vm.provider :libvirt do |domain|
-      domain.management_network_address = '10.20.0.0/24'
-      domain.memory = 48000
-      domain.cpus = 32
-      domain.graphics_port = 5903
-      domain.storage :file, :size => '500G', :type => 'raw'
-      domain.boot 'network'
-      domain.boot 'hd'
-    end
+  config.vm.define vm_name = "fuelslave-%02d" % (CONF["node"]["slaves"].size-1) do |lastfuelslave|
+      lastfuelslave.vm.provision "shell", path: "fuel_deploy.sh", args: CONF["node"]["slaves"].size
   end
 end
