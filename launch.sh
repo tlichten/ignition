@@ -2,11 +2,10 @@
 
 yum -y install git wget gcc libxslt-devel libxml2-devel libvirt-devel libguestfs-tools-c ruby-devel ruby qemu-kvm libvirt virt-install bridge-utils rsync
 
-sudo rmmod kvm-intel
+rmmod kvm-intel
+sh -c "echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf"
 
-sudo sh -c "echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf"
-
-sudo modprobe kvm-intel
+modprobe kvm-intel
 
 yum -y install https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.rpm
 
