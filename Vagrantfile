@@ -34,6 +34,11 @@ Vagrant.configure("2") do |config|
   CONF["node"]["slaves"].each_with_index do |slave,i|
     config.vm.define vm_name = "fuelslave-%02d" % i do |fuelslave|  
       fuelslave.vm.network :private_network, :ip => "172.16.0.4#{2+i}"
+      
+      if i == (CONF["node"]["slaves"].size-1)
+        fuelslave.vm.provision "shell", path: "fuel_deploy.sh", args: CONF["node"]["slaves"].size
+      end
+      
       fuelslave.vm.provider :libvirt do |domain|
         domain.management_network_address = CONF["node"]["master"]["cidr"]["admin"]
         domain.management_network_mac = "DEADAC1D00%02d" % i
@@ -47,7 +52,4 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define vm_name = "fuelslave-%02d" % (CONF["node"]["slaves"].size-1) do |lastfuelslave|
-      lastfuelslave.vm.provision "shell", path: "fuel_deploy.sh", args: CONF["node"]["slaves"].size
-  end
 end
