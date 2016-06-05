@@ -3,7 +3,6 @@
 require "yaml"
 
 CONF = YAML.load_file("fuel_client.yaml")
-ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
 Vagrant.configure("2") do |config|
   config.vm.define :fuelmaster do |fuelmaster|
@@ -19,6 +18,8 @@ Vagrant.configure("2") do |config|
     fuelmaster.vm.network :private_network, :ip => "172.16.0.40"
     fuelmaster.vm.provision "shell", path: "fuel.sh"
     fuelmaster.vm.provision "file", source: "parse_yaml.sh", destination: "parse_yaml.sh"
+    fuelmaster.vm.provision "file", source: "fuel_client.yaml", destination: "fuel_client.yaml"
+    fuelmaster.vm.provision "file", source: "fuel_deploy.sh", destination: "fuel_deploy.sh"
     fuelmaster.vm.provider :libvirt do |domain|
       domain.management_network_address = CONF["node"]["master"]["cidr"]["admin"]
       domain.memory = CONF["node"]["master"]["memory"]
@@ -35,10 +36,6 @@ Vagrant.configure("2") do |config|
     config.vm.define vm_name = "fuelslave-%02d" % i do |fuelslave|  
       fuelslave.vm.network :private_network, :ip => "172.16.0.4#{2+i}"
       
-      if i == (CONF["node"]["slaves"].size-1)
-        fuelslave.vm.provision "shell", path: "fuel_deploy.sh", args: CONF["node"]["slaves"].size
-      end
-      
       fuelslave.vm.provider :libvirt do |domain|
         domain.management_network_address = CONF["node"]["master"]["cidr"]["admin"]
         domain.management_network_mac = "DEADAC1D00%02d" % i
@@ -50,6 +47,13 @@ Vagrant.configure("2") do |config|
         domain.boot 'hd'
       end
     end
+  end
+
+  config.trigger.after :up, :vm => "fuelmaster" do
+    CONF["node"]["slaves"].each_with_index do |slave,i|
+      run "vagrant reload fuelslave-%2d" % i
+    end
+    run_remote "bash fuel_deploy.sh"
   end
 
 end

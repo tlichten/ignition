@@ -2,7 +2,7 @@ env:
   iso: "/tmp/MirantisOpenStack-8.0.iso"
   autodeploy: true
   skipfuelmenu: false
-  genpassword: 1
+  genpassword: true
 node:
   master:
     username: "root"

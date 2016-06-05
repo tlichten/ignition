@@ -13,7 +13,7 @@ while [ $NUM_NODES_DISCOVERED -ne $NUM_NODES_EXPECTED ]; do
   sleep 5
 done
 
-if [ $env_genpassword -eq 1 ]; then
+if [ "$env_genpassword" = true ]; then
   echo "Setting fuel admin password"
   PASSWORD=$(date +%s | sha256sum | base64 | head -c 8)
   fuel user change-password --new-pass $PASSWORD
@@ -23,7 +23,7 @@ if [ $env_genpassword -eq 1 ]; then
   echo "Fuel admin password is $PASSWORD"
 fi
 
-for i in $(seq -w 1 $NUM_NODES_EXPECTED)
+for i in $(seq -w 01 $NUM_NODES_EXPECTED)
 do
  fuel node --node-id 00:$i --name fuelslave-$i 
 done
