@@ -8,6 +8,8 @@ do
    echo $LOGLINE
 done
 
+sleep 10
+
 tail -f /var/log/fuel-bootstrap-image-build.log | while read LOGLINE
 do
    [[ "${LOGLINE}" == *"has been activated"* ]] && pkill -P $$ tail
