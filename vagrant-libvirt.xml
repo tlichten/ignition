@@ -1,0 +1,14 @@
+<network connections='4' ipv6='yes'>
+  <name>vagrant-libvirt</name>
+  <uuid>265f5720-8972-4b30-b903-1dffc236ecb5</uuid>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='52:54:00:f7:48:6c'/>
+  <ip address='10.20.0.1' netmask='255.255.255.0'>
+  </ip>
+</network>
+
