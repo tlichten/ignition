@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
+echo "Fuel starting up."
 
-echo "Fuel starting up. Waiting for bootstrap image. This will take 20-30 minutes ..."
+echo "Adding host as nameserver"
+echo "nameserver 10.20.0.1" >> /etc/resolv.conf
+
+echo "Waiting for bootstrap image. This will take 20-30 minutes ..."
 
 tail -f /var/log/puppet/bootstrap_admin_node.log | while read LOGLINE
 do
