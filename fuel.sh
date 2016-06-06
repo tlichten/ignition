@@ -3,6 +3,7 @@ echo "Fuel starting up."
 
 echo "Adding host as nameserver"
 echo "nameserver 10.20.0.1" >> /etc/resolv.conf
+sed -i "s/8.8.8.8/10.20.0.1/" /etc/fuel/astute.yaml
 
 echo "Waiting for bootstrap image. This will take 20-30 minutes ..."
 
