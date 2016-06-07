@@ -2,6 +2,7 @@
 # vi: set ft=ruby :
 require "yaml"
 
+ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 CONF = YAML.load_file("fuel_client.yaml")
 
 Vagrant.configure("2") do |config|
@@ -51,7 +52,7 @@ Vagrant.configure("2") do |config|
 
   config.trigger.after :up, :vm => "fuelmaster" do
     CONF["node"]["slaves"].each_with_index do |slave,i|
-      run "vagrant reload fuelslave-%2d" % i
+      run "vagrant up --provider libvirt fuelslave-%02d" % i
     end
     run_remote "bash fuel_deploy.sh"
   end
