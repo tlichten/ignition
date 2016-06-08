@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 require "yaml"
-
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 CONF = YAML.load_file("env.yaml")
 
