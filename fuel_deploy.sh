@@ -4,7 +4,7 @@ NUM_NODES_EXPECTED=$1
 
 . parse_yaml.sh
 
-eval $(parse_yaml fuel_client.yaml)
+eval $(parse_yaml env.yaml)
 
 NUM_NODES_DISCOVERED=0
 while [ $NUM_NODES_DISCOVERED -ne $NUM_NODES_EXPECTED ]; do

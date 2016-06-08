@@ -17,7 +17,7 @@ wget -nc http://9f2b43d3ab92f886c3f0-e8d43ffad23ec549234584e5c62a6e24.r60.cf1.ra
 chmod 777 /tmp/MirantisOpenStack-8.0.iso
 systemctl start libvirtd
 systemctl enable libvirtd
-virsh net-define vagrant-libvirt.xml
+virsh net-define lib/vagrant-libvirt.xml
 virsh net-start vagrant-libvirt
 
 vagrant up --provider libvirt

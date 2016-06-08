@@ -3,12 +3,12 @@
 require "yaml"
 
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
-CONF = YAML.load_file("fuel_client.yaml")
+CONF = YAML.load_file("env.yaml")
 
 Vagrant.configure("2") do |config|
   config.vm.define :fuelmaster do |fuelmaster|
     fuelmaster.vm.box = "fuelmaster"
-    fuelmaster.vm.box_url = "file://package.box"
+    fuelmaster.vm.box_url = "file://lib/package.box"
     fuelmaster.vm.boot_timeout = 7200
     fuelmaster.ssh.host = CONF["node"]["master"]["ip"]["admin"]
     fuelmaster.ssh.username = CONF["node"]["master"]["username"]
@@ -18,8 +18,8 @@ Vagrant.configure("2") do |config|
     fuelmaster.vm.synced_folder ".", "/vagrant", disabled: true
     fuelmaster.vm.network :private_network, :ip => "172.16.0.40"
     fuelmaster.vm.provision "shell", path: "fuel.sh"
-    fuelmaster.vm.provision "file", source: "parse_yaml.sh", destination: "parse_yaml.sh"
-    fuelmaster.vm.provision "file", source: "fuel_client.yaml", destination: "fuel_client.yaml"
+    fuelmaster.vm.provision "file", source: "lib/parse_yaml.sh", destination: "parse_yaml.sh"
+    fuelmaster.vm.provision "file", source: "env.yaml", destination: "env.yaml"
     fuelmaster.vm.provision "file", source: "fuel_deploy.sh", destination: "fuel_deploy.sh"
     fuelmaster.vm.provider :libvirt do |domain|
       domain.management_network_address = CONF["node"]["master"]["cidr"]["admin"]
