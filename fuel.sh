@@ -29,4 +29,3 @@ while ! egrep "Bootstrap image (.*) has been activated" /var/log/fuel-bootstrap-
 echo "Bootstrap image available"
 
 iptables -t nat -A POSTROUTING -j MASQUERADE
-
