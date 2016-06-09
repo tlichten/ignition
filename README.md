@@ -6,6 +6,7 @@ A virtualized Mirantis Fuel and OpenStack lab on demand to be provisioned on bar
 Spin up turn-key lab environments that are either predefined examples or can be customized for demo, learning, functional validation purposes.
 
 ##### Steps
-- Launch Centos 7 bare metal install at packet.net
-- curl https://raw.githubusercontent.com/tlichten/ignition/master/install.sh | sh
-
+- Launch Type 3 (large) Centos 7 bare metal instance at packet.net
+```bash
+curl https://raw.githubusercontent.com/tlichten/ignition/master/install.sh | sh
+```
