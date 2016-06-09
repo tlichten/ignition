@@ -23,7 +23,7 @@ if [ "$env_genpassword" = true ]; then
   echo "Fuel admin password is $PASSWORD"
 fi
 
-for i in $(seq -w 01 $NUM_NODES_EXPECTED)
+for i in $(seq -w 00 $(($NUM_NODES_EXPECTED-1)))
 do
  fuel node --node-id 00:$i --name fuelslave-$i 
 done
