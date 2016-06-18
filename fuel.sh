@@ -13,6 +13,9 @@ sed -i "s/8.8.8.8/10.20.0.1/" /etc/fuel/astute.yaml
 echo "Adding NTP server"
 sed -i "s/0.fuel.pool.ntp.org/$env_ntp/" /etc/fuel/astute.yaml
 
+echo "Setting default gw for slaves to 10.20.0.1"
+sed -i "s/\"dhcp_gateway\": \"10.20.0.2\"/\"dhcp_gateway\": \"10.20.0.1\"/" /etc/fuel/astute.yaml
+
 echo "Enable advanced and experimental features"
 sed -i "/\"FEATURE_GROUPS\":/a  - \"experimental\"\n- \"advanced\"" /etc/fuel/astute.yaml
 
