@@ -14,13 +14,13 @@ Vagrant.configure("2") do |config|
     fuelmaster.ssh.username = CONF["master"]["username"]
     fuelmaster.ssh.password = CONF["master"]["password"]
     fuelmaster.ssh.sudo_command = "%c"
-    fuelmaster.ssh.insert_key = false
+    fuelmaster.ssh.insert_key = true
     fuelmaster.vm.synced_folder ".", "/vagrant", disabled: true
     fuelmaster.vm.network :private_network, :ip => "172.16.0.40"
-    fuelmaster.vm.provision "shell", path: "fuel.sh"
     fuelmaster.vm.provision "file", source: "lib/parse_yaml.sh", destination: "parse_yaml.sh"
     fuelmaster.vm.provision "file", source: "env.yaml", destination: "env.yaml"
     fuelmaster.vm.provision "file", source: "fuel_deploy.sh", destination: "fuel_deploy.sh"
+    fuelmaster.vm.provision "shell", path: "fuel.sh", upload_path: "/root/fuel.sh"
     fuelmaster.vm.provider :libvirt do |domain|
       domain.management_network_address = CONF["master"]["cidr"]["admin"]
       domain.memory = CONF["master"]["memory"]
