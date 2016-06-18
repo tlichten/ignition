@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
+
+. parse_yaml.sh
+
+eval $(parse_yaml env.yaml)
+
 echo "Fuel starting up."
 
 echo "Adding host as nameserver"
 echo "nameserver 10.20.0.1" >> /etc/resolv.conf
 sed -i "s/8.8.8.8/10.20.0.1/" /etc/fuel/astute.yaml
+
+echo "Adding NTP server"
+sed -i "s/0.fuel.pool.ntp.org/$env_ntp/" /etc/fuel/astute.yaml
 
 echo "Enable advanced and experimental features"
 sed -i "/\"FEATURE_GROUPS\":/a  - \"experimental\"\n- \"advanced\"" /etc/fuel/astute.yaml
