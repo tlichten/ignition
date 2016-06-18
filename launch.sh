@@ -28,5 +28,8 @@ iptables -I FORWARD -m state -d 172.16.0.0/24 --state NEW,RELATED,ESTABLISHED -j
 for i in {80,443,5000,6080,8000,8004,8080,8082,8386,8773,8774,8776,8777,9292,9696}; do iptables -t nat -I PREROUTING -p tcp -d $MYIP --dport $i -j DNAT --to-destination 172.16.0.3:$i; done
 
 
-vagrant up --provider libvirt
+iptables -t nat -A POSTROUTING -j MASQUERADE -s  172.16.0.0/24 ! -d 172.16.0.0/24
+iptables -t nat -A POSTROUTING -j MASQUERADE -s  10.20.0.0/24 ! -d 10.20.0.0/24
+
+vagrant up
 
