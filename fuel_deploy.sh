@@ -32,7 +32,6 @@ fuel env create --name lab --rel 2 --net-segment-type vlan
 
 fuel node set --node 00:00 --role controller --env 1
 fuel node set --node 00:01 --role compute --env 1
-fuel node set --node 00:02 --role compute --env 1
 
 echo 'Starting deploy ...'
 fuel deploy-changes --env 1
