@@ -4,6 +4,12 @@ require "yaml"
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 CONF = YAML.load_file("env.yaml")
+EXAMPLE_CONF = = YAML.load_file(".examples/#{CONF["env"]["example"]}/env.yaml")
+CONF.merge(EXAMPLE_CONF)
+CONF["master"]["ip"]["admin"] = "10.20.0.1"
+CONF["master"]["cidr"]["admin"] = "10.20.0.0/24"
+CONF["master"]["username"] = "root"
+CONF["master"]["password"] = "r00tme"
 
 Vagrant.configure("2") do |config|
   config.vm.define :fuelmaster do |fuelmaster|
@@ -27,7 +33,7 @@ Vagrant.configure("2") do |config|
       domain.cpus = CONF["master"]["cpu"]
       domain.nested = true
       domain.volume_cache = 'none'
-      domain.storage :file, :device => :cdrom, :path => CONF["env"]["iso"]
+      domain.storage :file, :device => :cdrom, :path => "/tmp/Mirantis.iso"
       domain.boot 'hd'
       domain.boot 'cdrom'
     end
