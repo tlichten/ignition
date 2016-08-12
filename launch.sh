@@ -23,7 +23,10 @@ virsh net-start vagrant-libvirt
 
 vagrant up &
 pid=$!
+sleep 60
 while [ -d /proc/$pid ] ; do
+    virsh send-key ignition_fuelmaster KEY_ENTER
+    sleep 4
     virsh send-key ignition_fuelmaster KEY_F8
 done
 
