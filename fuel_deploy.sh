@@ -25,16 +25,16 @@ fi
 
 for i in $(seq -w 00 $(($NUM_NODES_EXPECTED-1)))
 do
-  fuel --os-username=admin --os-password=$PASSWORD node --node-id 00:$i --name fuelslave-$i 
+  fuel node --node-id 00:$i --name fuelslave-$i 
 done
 
-fuel --os-username=admin --os-password=$PASSWORD env create --name lab --rel 2 --net-segment-type vlan
+fuel env create --name lab --rel 2 --net-segment-type vlan
 
-fuel --os-username=admin --os-password=$PASSWORD node set --node 00:00 --role controller --env 1
-fuel --os-username=admin --os-password=$PASSWORD node set --node 00:01 --role compute --env 1
+fuel node set --node 00:00 --role controller --env 1
+fuel node set --node 00:01 --role compute --env 1
 
 echo 'Starting deploy ...'
-fuel --os-username=admin --os-password=$PASSWORD deploy-changes --env 1
+fuel deploy-changes --env 1
 echo "Environment ready."
 if [ "$env_genpassword" = true ]; then
   echo "Fuel admin password is $PASSWORD"
