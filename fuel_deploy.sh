@@ -18,7 +18,7 @@ if [ "$env_genpassword" = true ]; then
   PASSWORD=$(date +%s | sha256sum | base64 | head -c 8)
   fuel user change-password --new-pass $PASSWORD
   sed -i "s/\"password\": \"admin\"/\"password\": \"$PASSWORD\"/" /etc/fuel/astute.yaml
-  sed -i "s/KEYSTONE_PASS: \"\(.*\)\"/KEYSTONE_PASS: \"$PASSWORD\"/" /root/.config/fuel/fuel_client.yaml
+  sed -i "s/OS_PASSWORD: \"\(.*\)\"/OS_PASSWORD: \"$PASSWORD\"/" /root/.config/fuel/fuel_client.yaml
   dockerctl shell astute service astute restart
   echo "Fuel admin password is $PASSWORD"
 fi
