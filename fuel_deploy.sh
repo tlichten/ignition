@@ -38,6 +38,7 @@ fuel settings --env 1 --download
 sed -i "s/value: qemu/value: kvm/" /root/settings_1.yaml
 MYIP=$(curl -s 4.ifcfg.me)
 sed -i "s/public.fuel.local/$MYIP.xip.io/" /root/settings_1.yaml
+fuel settings --env 1 --upload
 
 echo 'Starting deploy ...'
 fuel deploy-changes --env 1
