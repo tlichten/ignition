@@ -41,3 +41,11 @@ while [ -d /proc/$pid ] ; do
     virsh -q send-key ignition_fuelmaster KEY_F8
 done
 set -o xtrace
+echo "Exposing installation on public interface"
+MYIP=$(curl -s 4.ifcfg.me)
+iptables -I FORWARD -m state -d 10.20.0.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
+iptables -t nat -I PREROUTING -p tcp -d $MYIP --dport 8443 -j DNAT --to-destination 10.20.0.2:8443
+iptables -I FORWARD -m state -d 172.16.0.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
+for i in {80,443,5000,6080,8000,8004,8080,8082,8386,8773,8774,8776,8777,9292,9696}; do iptables -t nat -I PREROUTING -p tcp -d $MYIP --dport $i -j DNAT --to-destination 172.16.0.3:$i; done
+iptables -t nat -A POSTROUTING -j MASQUERADE -s  172.16.0.0/24 ! -d 172.16.0.0/24
+iptables -t nat -A POSTROUTING -j MASQUERADE -s  10.20.0.0/24 ! -d 10.20.0.0/24
