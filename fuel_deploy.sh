@@ -33,6 +33,12 @@ fuel env create --name lab --rel 2 --net-segment-type vlan
 fuel node set --node 00:00 --role controller --env 1
 fuel node set --node 00:01 --role compute --env 1
 
+echo 'Applying settings'
+fuel settings --env 1 --download
+sed -i "s/value: qemu/value: kvm/" /root/settings_1.yaml
+MYIP=$(curl -s 4.ifcfg.me)
+sed -i "s/public.fuel.local/$MYIP.xip.io/" /root/settings_1.yaml
+
 echo 'Starting deploy ...'
 fuel deploy-changes --env 1
 echo "Environment ready."
