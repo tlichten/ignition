@@ -12,7 +12,7 @@ while [ $NUM_NODES_DISCOVERED -ne $NUM_NODES_EXPECTED ]; do
   echo "Discovered $NUM_NODES_DISCOVERED/$NUM_NODES_EXPECTED node(s) so far"
   sleep 5
 done
-PASSWORD= 
+export PASSWORD= 
 if [ "$env_genpassword" = true ]; then
   echo "Setting fuel admin password"
   PASSWORD=$(date +%s | sha256sum | base64 | head -c 8)
@@ -35,17 +35,23 @@ fuel node set --node 00:01 --role compute --env 1
 
 echo 'Applying settings'
 fuel settings --env 1 --download
-sed -i "s/value: qemu/value: kvm/" /root/settings_1.yaml
-MYIP=$(curl -s 4.ifcfg.me)
-sed -i "s/public.fuel.local/$MYIP.xip.io/" /root/settings_1.yaml
-echo "$MYIP     $MYIP.xip.io" >> /etc/hosts
+export MYIP=$(curl -s 4.ifcfg.me)
+export MYHOSTNAME = "$MYIP.xip.io"
+echo "$MYIP     $MYHOSTNAME" >> /etc/hosts
 
 /usr/bin/env ruby <<-EORUBY
   require 'yaml'
+        password = ENV["PASSWORD"]
+        myhostname = ENV["MYHOSTNAME"]
+        
         config = YAML.load_file('settings_1.yaml')
         config["editable"]["public_ssl"]["horizon"]["value"] = true
+        config["editable"]["public_ssl"]["hostname"]["value"] = myhostname
         config["editable"]["public_ssl"]["services"]["value"] = true
+        config["editable"]["common"]["libvirt_type"]["value"] = "kvm"
         config["editable"]["additional_components"]["murano"]["value"] = true
+        config["editable"]["access"]["password"]["value"] = password
+        
         File.open('settings_1.yaml','w') do |h|
                 h.write config.to_yaml
         end
