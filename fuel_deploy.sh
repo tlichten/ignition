@@ -36,7 +36,7 @@ fuel node set --node 00:01 --role compute --env 1
 echo 'Applying settings'
 fuel settings --env 1 --download
 export MYIP=$(curl -s 4.ifcfg.me)
-export MYHOSTNAME = "$MYIP.xip.io"
+export MYHOSTNAME="$MYIP.xip.io"
 echo "$MYIP     $MYHOSTNAME" >> /etc/hosts
 
 /usr/bin/env ruby <<-EORUBY
