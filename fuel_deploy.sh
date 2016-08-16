@@ -39,6 +39,18 @@ sed -i "s/value: qemu/value: kvm/" /root/settings_1.yaml
 MYIP=$(curl -s 4.ifcfg.me)
 sed -i "s/public.fuel.local/$MYIP.xip.io/" /root/settings_1.yaml
 echo "$MYIP     $MYIP.xip.io" >> /etc/hosts
+
+/usr/bin/env ruby <<-EORUBY
+  require 'yaml'
+        config = YAML.load_file('settings_1.yaml')
+        config["editable"]["public_ssl"]["horizon"]["value"] = true
+        config["editable"]["public_ssl"]["services"]["value"] = true
+        config["editable"]["additional_components"]["murano"]["value"] = true
+        File.open('settings_1.yaml','w') do |h|
+                h.write config.to_yaml
+        end
+EORUBY
+
 fuel settings --env 1 --upload
 
 echo 'Starting deploy ...'
