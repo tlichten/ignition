@@ -45,7 +45,23 @@ resource "packet_device" "ignition" {
 
 				provisioner "remote-exec" {
       		inline = [
-	        	"cd provision && sh launch.sh"
-	    			]
+	        	"cd provision && sh launch.sh ${var.fuel_openstack_password}"
+	    		]
 				}
+}
+
+output "Fuel" {
+    value = "https://${packet_device.ignition.network.0.address}.xip.io:8443"
+}
+
+output "Horizon" {
+    value = "https://${packet_device.ignition.network.0.address}.xip.io"
+}
+
+output "User" {
+    value = "admin"
+}
+
+output "Password" {
+    value = "${var.fuel_openstack_password}"
 }

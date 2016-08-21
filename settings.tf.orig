@@ -1,5 +1,6 @@
 variable "packet_api_key" {
 	description = "get your packet api key at https://app.packet.net/portal#/api-keys"
+	default = "SET_YOUR_KEY_HERE"
 }
 
 variable "packet_machine_type" {
@@ -15,6 +16,11 @@ variable "packet_location" {
 variable "hostname" {
 	description = "Hostname for packet and machine"
 	default = "ignition"
+}
+
+variable "fuel_openstack_password" {
+	description = "Password being used for Fuel and OpenStack admin user"
+	default = "badpassword"
 }
 
 variable "ssh_private_key" {

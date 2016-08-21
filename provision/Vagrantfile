@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
     CONF["nodes"].each_with_index do |slave,i|
       run "vagrant up --provider libvirt fuelslave-%02d" % i
     end
-    run_remote "bash fuel_deploy.sh #{(CONF["nodes"].size)}"
+    run_remote "bash fuel_deploy.sh #{(CONF["nodes"].size)} #{ENV['FUEL_OPENSTACK_PASSWORD']}"
   end
 
 end
