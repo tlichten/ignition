@@ -36,9 +36,9 @@ sleep 60
 export LANG=en_US.UTF-8
 set +o xtrace
 while [ -d /proc/$pid ] ; do
-    virsh -q send-key ignition_fuelmaster KEY_ENTER
+    virsh -q send-key provision_fuelmaster KEY_ENTER
     sleep 4
-    virsh -q send-key ignition_fuelmaster KEY_F8
+    virsh -q send-key provision_fuelmaster KEY_F8
 done
 set -o xtrace
 echo "Exposing installation on public interface"
