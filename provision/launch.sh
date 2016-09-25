@@ -1,28 +1,78 @@
 #!/usr/bin/env bash
-
-export FUEL_OPENSTACK_PASSWORD=$1
-
 set -o xtrace
 
-yum -y install git wget gcc libxslt-devel libxml2-devel libvirt-devel libguestfs-tools-c ruby-devel ruby qemu-kvm libvirt virt-install bridge-utils rsync
+. lib/parse_yaml.sh
+eval $(parse_yaml ../env.yaml)
+
+if [ -f /etc/lsb-release ]; then
+  DISTRO="Ubuntu"
+elif [ -f /etc/redhat-release ]; then
+  DISTRO="CentOS"
+else
+  echo "Unable to determine if Ubuntu or CentOS"
+  exit 1
+fi
+
+case $DISTRO in
+    'Ubuntu')
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -y
+    apt-get install -y language-pack-en locales-all
+    export LANGUAGE=en_US.UTF-8; export LANG=en_US.UTF-8; export LC_ALL=en_US.UTF-8; locale-gen en_US.UTF-8
+    apt-get install -y keyboard-configuration && dpkg-reconfigure keyboard-configuration && dpkg-reconfigure locales
+    apt-get -y install libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev qemu-kvm libvirt-bin bridge-utils build-essential
+    ;;
+    'CentOS')
+    yum udpate && yum -y install git wget gcc libxslt-devel libxml2-devel libvirt-devel libguestfs-tools-c ruby-devel ruby qemu-kvm libvirt virt-install bridge-utils rsync
+    ;;
+esac
+
 
 rmmod kvm-intel
-sh -c "echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf"
+
+case $DISTRO in
+    'Ubuntu')
+    sh -c "echo 'options kvm-intel nested=1' > /etc/modprobe.d/qemu-system-x86.conf"
+    ;;
+    'CentOS')
+    sh -c "echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf"
+    ;;
+esac
 
 modprobe kvm-intel
 
-rpm -qa | grep -qw vagrant || yum -y install https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.rpm
+case $DISTRO in
+    'Ubuntu')
+    curl -O https://releases.hashicorp.com/vagrant/1.8.5/vagrant_1.8.5_x86_64.deb
+    dpkg -i vagrant*.deb
+    ;;
+    'CentOS')
+    rpm -qa | grep -qw vagrant || yum -y install https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.rpm
+    ;;
+esac
 
 vagrant plugin list | grep -qw vagrant-libvirt || vagrant plugin install vagrant-libvirt
 vagrant plugin list | grep -qw vagrant-triggers || vagrant plugin install vagrant-triggers
 
-systemctl start libvirtd
-systemctl enable libvirtd
+case $DISTRO in
+    'Ubuntu')
+    systemctl start libvirt-bin
+    systemctl enable libvirt-bin
+    systemctl start virtlogd
+    systemctl enable virtlogd
+    ;;
+    'CentOS')
+    systemctl start libvirtd
+    systemctl enable libvirtd
+    ;;
+esac
+
+
 virsh net-define lib/vagrant-libvirt.xml
 virsh net-start vagrant-libvirt
 
-wget -nc http://9f2b43d3ab92f886c3f0-e8d43ffad23ec549234584e5c62a6e24.r60.cf1.rackcdn.com/MirantisOpenStack-9.0.iso -O /tmp/MirantisOpenStack.iso
-chmod 777 /tmp/MirantisOpenStack.iso
+curl -o /var/lib/libvirt/images/MirantisOpenStack.iso $env_iso
+chmod 777 /var/lib/libvirt/images/MirantisOpenStack.iso
 
 echo "Exposing installation on public interface"
 MYIP=$(curl -s 4.ifcfg.me)

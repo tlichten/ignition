@@ -19,7 +19,7 @@ resource "packet_device" "ignition" {
         hostname = "${var.hostname}"
         plan = "${var.packet_machine_type}"
         facility = "${var.packet_location}"
-        operating_system = "centos_7"
+        operating_system = "ubuntu_16_04_image"
         billing_cycle = "hourly"
         project_id = "${packet_project.ignition.id}"
 
@@ -45,7 +45,7 @@ resource "packet_device" "ignition" {
 
         provisioner "remote-exec" {
           inline = [
-            "cd provision && sh launch.sh ${var.fuel_openstack_password}"
+            "cd provision && sh launch.sh"
           ]
         }
 }
@@ -63,5 +63,5 @@ output "User" {
 }
 
 output "Password" {
-    value = "${var.fuel_openstack_password}"
+    value = "Password is defined in the file env.yaml"
 }

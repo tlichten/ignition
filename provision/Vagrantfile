@@ -4,13 +4,17 @@ require "yaml"
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 CONF = YAML.load_file("../env.yaml")
+SCENARIO_CONF = YAML.load_file("./scenarios/" + CONF["env"]["scenario"] + "/env.yaml")
 
+CONF["master"]["ip"]= "10.20.0.2"
+CONF["master"]["username"] = "root"
+CONF["master"]["cidr"]  = "10.20.0.0/24"
 Vagrant.configure("2") do |config|
   config.vm.define :fuelmaster do |fuelmaster|
     fuelmaster.vm.box = "fuelmaster"
     fuelmaster.vm.box_url = "file://lib/package.box"
     fuelmaster.vm.boot_timeout = 7200
-    fuelmaster.ssh.host = CONF["master"]["ip"]["admin"]
+    fuelmaster.ssh.host = CONF["master"]["ip"]
     fuelmaster.ssh.username = CONF["master"]["username"]
     fuelmaster.ssh.password = CONF["master"]["password"]
     fuelmaster.ssh.sudo_command = "%c"
@@ -20,25 +24,26 @@ Vagrant.configure("2") do |config|
     fuelmaster.vm.provision "file", source: "lib/parse_yaml.sh", destination: "parse_yaml.sh"
     fuelmaster.vm.provision "file", source: "../env.yaml", destination: "env.yaml"
     fuelmaster.vm.provision "file", source: "fuel_deploy.sh", destination: "fuel_deploy.sh"
+    fuelmaster.vm.provision "file", source: "scenarios", destination: "scenarios"
     fuelmaster.vm.provision "shell", path: "fuel.sh", upload_path: "/root/fuel.sh"
     fuelmaster.vm.provider :libvirt do |domain|
-      domain.management_network_address = CONF["master"]["cidr"]["admin"]
+      domain.management_network_address = CONF["master"]["cidr"]
       domain.memory = CONF["master"]["memory"]
       domain.cpus = CONF["master"]["cpu"]
       domain.nested = true
       domain.volume_cache = 'none'
-      domain.storage :file, :device => :cdrom, :path => CONF["env"]["iso"]
+      domain.storage :file, :device => :cdrom, :path => "/var/lib/libvirt/images/MirantisOpenStack.iso"
       domain.boot 'hd'
       domain.boot 'cdrom'
     end
   end
 
-  CONF["nodes"].each_with_index do |slave,i|
+  SCENARIO_CONF["nodes"].each_with_index do |slave,i|
     config.vm.define vm_name = "fuelslave-%02d" % i do |fuelslave|
       fuelslave.vm.network :private_network, :ip => "172.16.0.4#{2+i}"
 
       fuelslave.vm.provider :libvirt do |domain|
-        domain.management_network_address = CONF["master"]["cidr"]["admin"]
+        domain.management_network_address = CONF["master"]["cidr"]
         domain.management_network_mac = "DEADAC1D00%02d" % i
         domain.memory = slave["memory"]
         domain.cpus = slave["cpu"]
@@ -51,10 +56,10 @@ Vagrant.configure("2") do |config|
   end
 
   config.trigger.after :up, :vm => "fuelmaster" do
-    CONF["nodes"].each_with_index do |slave,i|
+    SCENARIO_CONF["nodes"].each_with_index do |slave,i|
       run "vagrant up --provider libvirt fuelslave-%02d" % i
     end
-    run_remote "bash fuel_deploy.sh #{(CONF["nodes"].size)} #{ENV['FUEL_OPENSTACK_PASSWORD']}"
+    run_remote "bash fuel_deploy.sh #{(SCENARIO_CONF["nodes"].size)}"
   end
 
 end
