@@ -30,7 +30,7 @@ done
 
 fuel env create --name lab --rel 2 --net-segment-type vlan
 
-export MYIP=$(curl -s 4.ifcfg.me)
+export MYIP=$(curl -s checkip.amazonaws.com)
 export MYHOSTNAME="$MYIP.xip.io"
 echo "$MYIP     $MYHOSTNAME" >> /etc/hosts
 

@@ -23,7 +23,7 @@ case $DISTRO in
     apt-get -y install libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev qemu-kvm libvirt-bin bridge-utils build-essential
     ;;
     'CentOS')
-    yum udpate && yum -y install git wget gcc libxslt-devel libxml2-devel libvirt-devel libguestfs-tools-c ruby-devel ruby qemu-kvm libvirt virt-install bridge-utils rsync
+    yum -y update && yum -y install git wget gcc libxslt-devel libxml2-devel libvirt-devel libguestfs-tools-c ruby-devel ruby qemu-kvm libvirt virt-install bridge-utils rsync
     ;;
 esac
 
@@ -75,7 +75,7 @@ curl -o /var/lib/libvirt/images/MirantisOpenStack.iso $env_iso
 chmod 777 /var/lib/libvirt/images/MirantisOpenStack.iso
 
 echo "Exposing installation on public interface"
-MYIP=$(curl -s 4.ifcfg.me)
+MYIP=$(curl -s checkip.amazonaws.com)
 iptables -I FORWARD -m state -d 10.20.0.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
 iptables -t nat -I PREROUTING -p tcp -d $MYIP --dport 8443 -j DNAT --to-destination 10.20.0.2:8443
 iptables -I FORWARD -m state -d 172.16.0.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
@@ -97,7 +97,7 @@ set -o xtrace
 
 
 echo "Exposing installation on public interface"
-MYIP=$(curl -s 4.ifcfg.me)
+MYIP=$(curl -s checkip.amazonaws.com)
 iptables -I FORWARD -m state -d 10.20.0.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
 iptables -t nat -I PREROUTING -p tcp -d $MYIP --dport 8443 -j DNAT --to-destination 10.20.0.2:8443
 iptables -I FORWARD -m state -d 172.16.0.0/24 --state NEW,RELATED,ESTABLISHED -j ACCEPT
