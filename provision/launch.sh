@@ -51,7 +51,7 @@ case $DISTRO in
     ;;
 esac
 
-vagrant plugin list | grep -qw vagrant-libvirt || vagrant plugin install vagrant-libvirt
+vagrant plugin list | grep -qw vagrant-libvirt || vagrant plugin install vagrant-libvirt --plugin-version 0.0.35
 vagrant plugin list | grep -qw vagrant-triggers || vagrant plugin install vagrant-triggers
 
 case $DISTRO in
